@@ -89,15 +89,30 @@ struct CalendarView: View {
 
     // MARK: - 날짜 상세 시트
     private func entryDetail(_ entry: MoodEntry) -> some View {
-        VStack(spacing: 20) {
-            Text(entry.emoji).font(.system(size: 80))
-            Text(fullDate(entry.date)).font(.headline)
-            Text(entry.note.isEmpty ? "메모 없음" : entry.note)
-                .foregroundStyle(entry.note.isEmpty ? .secondary : .primary)
-            Spacer()
+        ScrollView {
+            VStack(spacing: 20) {
+                Text(entry.emoji).font(.system(size: 80))
+                Text(fullDate(entry.date)).font(.headline)
+
+                // 사진이 있으면 표시
+                if let data = entry.photoData, let uiImage = UIImage(data: data) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxHeight: 260)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .padding(.horizontal)
+                }
+
+                Text(entry.note.isEmpty ? "메모 없음" : entry.note)
+                    .foregroundStyle(entry.note.isEmpty ? .secondary : .primary)
+                    .padding(.horizontal)
+
+                Spacer()
+            }
+            .padding(.top, 40)
         }
-        .padding(.top, 40)
-        .presentationDetents([.medium])
+        .presentationDetents([.medium, .large])
     }
 
     // MARK: - 달력 계산
