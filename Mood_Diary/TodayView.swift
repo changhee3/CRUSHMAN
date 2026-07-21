@@ -34,8 +34,7 @@ struct TodayView: View {
                         .animation(.spring(response: 0.3, dampingFraction: 0.5), value: selectedEmoji)
                         .onTapGesture {
                             selectedEmoji = emoji
-                            let haptic = UIImpactFeedbackGenerator(style: .medium)
-                            haptic.impactOccurred()
+                            HapticManager.play(for: emoji)
                         }
                 }
             }
