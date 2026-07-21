@@ -4,7 +4,9 @@ import PhotosUI          // ← 추가
 
 struct TodayView: View {
     @Environment(\.modelContext) private var context
-    @Query private var entries: [MoodEntry]
+
+    /// 오늘 하루치만 조회한다. 전체 기록을 불러와 훑으면 기록이 쌓일수록 느려진다.
+    @Query private var todayEntries: [MoodEntry]
 
     private let emojis = ["😀", "🙂", "😐", "😞", "😢", "😡", "😴", "🥰"]
 
@@ -16,10 +18,14 @@ struct TodayView: View {
     @State private var pickerItem: PhotosPickerItem?
     @State private var photoData: Data?
 
-    private var todayKey: String { MoodEntry.key(for: Date()) }
-    private var todayEntry: MoodEntry? {
-        entries.first { $0.dayKey == todayKey }
+    init() {
+        // key(for:)는 DateFormatter를 쓰므로 #Predicate 안에서 호출할 수 없다.
+        // 바깥에서 문자열로 만들어 캡처한다.
+        let key = MoodEntry.key(for: Date())
+        _todayEntries = Query(filter: #Predicate<MoodEntry> { $0.dayKey == key })
     }
+
+    private var todayEntry: MoodEntry? { todayEntries.first }
 
     var body: some View {
         ScrollView {
